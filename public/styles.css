@@ -1,0 +1,9 @@
+.error_msg {
+    color: red;
+}
+
+body {
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
