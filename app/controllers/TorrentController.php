@@ -30,6 +30,12 @@ class TorrentController extends BaseController
         ));
     }
 
+    public function getTorrentsRSS()
+    {
+        $torrents = Torrent::with('category')->orderBy('created_at', 'desc')->get();
+        return Response::view('torrents/rss', array('torrents' => $torrents))->header('Content-Type', 'text/xml');
+    }
+
     public function getDetails($id)
     {
         $torrent = Torrent::find($id);

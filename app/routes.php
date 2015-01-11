@@ -9,6 +9,7 @@ Route::get('/register', 'AuthController@getRegister');
 Route::post('/register', 'AuthController@postRegister');
 
 Route::get('/torrents', 'TorrentController@getTorrents');
+Route::get('/torrents/rss', 'TorrentController@getTorrentsRSS');
 Route::get('/torrents/search/{category}', 'TorrentController@getTorrents');
 Route::get('/torrents/{id}', 'TorrentController@getDetails');
 Route::get('/torrents/{id}/delete', 'TorrentController@deleteTorrent');
