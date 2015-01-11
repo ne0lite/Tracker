@@ -86,6 +86,8 @@ class TorrentController extends BaseController
                 $torrent->name = $decoded['info']['name'];
                 $torrent->size = 0;
                 $torrent->downloads = 0;
+                $torrent->seeders = 0;
+                $torrent->leechers = 0;
                 $torrent->file = $contents;
                 $torrent->category_id = $data['category'];
                 $torrent->uploader_id = Auth::user()->id;

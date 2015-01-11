@@ -9,7 +9,6 @@ class CreateTorrents extends Migration {
             $table->increments('id');
             $table->timestamps();
             $table->string('name');
-            $table->binary('file');
             $table->bigInteger('size')->unsigned();
             $table->integer('downloads')->unsigned();
             $table->integer('seeders')->unsigned();
@@ -19,6 +18,9 @@ class CreateTorrents extends Migration {
             $table->integer('category_id')->unsigned();
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
         });
+
+        // http://stackoverflow.com/questions/20089652/laravel-mediumblob-for-database
+        DB::statement("ALTER TABLE torrents ADD file LONGBLOB");
     }
 
     public function down() {
