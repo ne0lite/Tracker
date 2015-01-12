@@ -8,10 +8,10 @@ class CreateTorrentUsers extends Migration {
         Schema::create('torrent_users', function($table) {
             $table->increments('id');
             $table->timestamps();
-            $table->string('peer_id');
-            $table->string('ip');
-            $table->integer('port');
-            $table->boolean('seeding');
+            $table->binary('peer_id');
+            $table->string('ip')->default('');
+            $table->integer('port')->default(0);
+            $table->boolean('seeding')->default(false);
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
             $table->integer('torrent_id')->unsigned();

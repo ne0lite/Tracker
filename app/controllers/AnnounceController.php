@@ -15,7 +15,7 @@ class AnnounceController extends BaseController
 
         Eloquent::unguard();
         // atlasa ierakstu vai izveido jaunu
-        $data = TorrentUser::firstOrCreate(array('torrent_id' => $torrent->id, 'user_id' => $user->id));
+        $data = TorrentUser::firstOrCreate(array('torrent_id' => $torrent->id, 'user_id' => $user->id, 'peer_id' => @$_GET['peer_id']));
         $data->ip = $_SERVER['REMOTE_ADDR']; // utorrent ip adrese
         $data->port = (int)@$_GET['port']; // utorrent ports
         $data->peer_id = @$_GET['peer_id']; // utorrent kaut kāds id
