@@ -7,23 +7,37 @@ class TorrentController extends BaseController
     {
         $categories = Category::all();
 
-        $torrents = Torrent::with('category')->orderBy('created_at', 'desc');
+        $query = Torrent::with('category')->orderBy('created_at', 'desc');
 
         if ($category) {
             $category = Category::where('name', '=', $category)->first();
             if ($category) {
-                $torrents = $torrents->where('category_id', $category->id);
+                $query = $query->where('category_id', $category->id);
             }
         }
 
         $search = null;
         if (isset($_GET['text'])) {
             $search = $_GET['text'];
-            $torrents = $torrents->where('name', 'LIKE', '%'.$search.'%');
+            $query = $query->where('name', 'LIKE', '%'.$search.'%');
+        }
+
+        $torrents = $query->get();
+        $peers = DB::table('torrent_users')->select(DB::raw('torrent_id, seeding, COUNT(user_id) as count'))->groupBy('torrent_id', 'seeding')->get();
+        foreach ($peers as $peer) {
+            foreach ($torrents as $torrent) {
+                if ($torrent->id == $peer->torrent_id) {
+                    if ($peer->seeding) {
+                        $torrent->seeders = $peer->count;
+                    } else {
+                        $torrent->leechers = $peer->count;
+                    }
+                }
+            }
         }
 
         return View::make('torrents/torrents', array(
-            'torrents' => $torrents->get(),
+            'torrents' => $torrents,
             'categories' => $categories,
             'category' => $category,
             'search' => $search
@@ -68,9 +82,6 @@ class TorrentController extends BaseController
             'category' => 'required',
         );
 
-        // todo: validate category
-        // todo: validate file size
-
         $validator = Validator::make($data, $rules);
 
         if ($validator->passes()) {
@@ -78,16 +89,11 @@ class TorrentController extends BaseController
 
                 $contents = file_get_contents(Input::file('file')->getRealPath());
                 $decoded = Bencode::decode($contents);
-                $decoded['announce'] = Config::get('app.url') . '/announce';
-                unset($decoded['announce-list']);
-                $contents = Bencode::encode($decoded);
 
                 $torrent = new Torrent;
                 $torrent->name = $decoded['info']['name'];
                 $torrent->size = 0;
                 $torrent->downloads = 0;
-                $torrent->seeders = 0;
-                $torrent->leechers = 0;
                 $torrent->file = $contents;
                 $torrent->category_id = $data['category'];
                 $torrent->uploader_id = Auth::user()->id;
@@ -133,6 +139,11 @@ class TorrentController extends BaseController
         }
         $torrent->downloads += 1;
         $torrent->save();
+
+        $decoded = Bencode::decode($torrent->file);
+        $decoded['announce'] = Config::get('app.url') . '/announce/' . $torrent->id . '/' . Auth::user()->id;
+        unset($decoded['announce-list']);
+        $torrent->file = Bencode::encode($decoded);
 
         $response = Response::make($torrent->file, 200);
         $response->header('Content-Type', 'application/x-bittorrent'); // http://x-bittorrent.mime-application.com/

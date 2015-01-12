@@ -17,8 +17,6 @@ No torrents uploaded yet.
         <th>Torrent name</th>
         <th>Size</th>
         <th>Downloaded</th>
-        <th>Seeders</th>
-        <th>Leechers</th>
         <th>Category</th>
     </tr>
     @foreach ($torrents as $torrent)
@@ -40,12 +38,6 @@ No torrents uploaded yet.
             <td class="downloads">
                 {{{ $torrent->downloads }}}
             </td>
-            <td>
-                {{{ $torrent->seeders }}}
-            </td>
-            <td>
-                 {{{ $torrent->leechers }}}
-             </td>
             <td>
                 <a href="{{{ url('torrents/search', strtolower($torrent->category->name)) }}}">
                 {{{ $torrent->category->name }}}

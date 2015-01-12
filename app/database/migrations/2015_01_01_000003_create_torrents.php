@@ -11,8 +11,6 @@ class CreateTorrents extends Migration {
             $table->string('name');
             $table->bigInteger('size')->unsigned();
             $table->integer('downloads')->unsigned();
-            $table->integer('seeders')->unsigned();
-            $table->integer('leechers')->unsigned();
             $table->integer('uploader_id')->unsigned();
             $table->foreign('uploader_id')->references('id')->on('users')->onDelete('cascade');
             $table->integer('category_id')->unsigned();
