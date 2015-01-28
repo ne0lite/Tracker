@@ -1,1 +1,1 @@
-Private Torrent tracker made with Laravel
+Private Torrent Tracker made with Laravel
